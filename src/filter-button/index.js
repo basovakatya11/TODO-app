@@ -1,2 +1,3 @@
-import Button from './filter-button';
-export default Button;
+import Button from './filter-button'
+
+export default Button
