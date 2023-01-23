@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react'
 import PropTypes from 'prop-types'
 
@@ -14,9 +12,10 @@ export default class Task extends React.Component {
     }))
   }
 
-  onSubmit = (e) => {
-    e.preventDefault()
-    this.props.onItemEdit(this.state.keyword)
+  onSubmit = (event) => {
+    event.preventDefault()
+    const label = this.state.keyword
+    if (label.search(/\S/) !== -1) this.props.onItemEdit(this.state.keyword)
   }
 
   render() {
@@ -38,8 +37,8 @@ export default class Task extends React.Component {
           </span>
           <span className="created">{timeToNow}</span>
         </label>
-        <button type="button" className="icon icon-edit" onClick={onIconEdit} />
-        <button type="button" className="icon icon-destroy" onClick={onDeleted} />
+        <button type="button" className="icon icon-edit" aria-label="Edit" onClick={onIconEdit} />
+        <button type="button" className="icon icon-destroy" aria-label="Destroy" onClick={onDeleted} />
       </div>
     )
 
@@ -48,7 +47,13 @@ export default class Task extends React.Component {
         <li className="editing">
           {view}
           <form onSubmit={this.onSubmit}>
-            <input type="text" className="edit" value={keyword} onChange={(event) => this.inputChangedHandler(event)} />
+            <input
+              type="text"
+              className="edit"
+              value={keyword}
+              onChange={(event) => this.inputChangedHandler(event)}
+              autoFocus
+            />
           </form>
         </li>
       )

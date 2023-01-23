@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Button from '../filter-button'
+import Button from '../FilterButton'
 
 export default class TasksFilter extends React.Component {
   state = {
@@ -19,7 +19,7 @@ export default class TasksFilter extends React.Component {
         item.selected = false
         return item
       })
-      const idx = buttons.findIndex((el) => el.id === id)
+      const idx = buttons.findIndex((elem) => elem.id === id)
       newArray[idx].selected = true
       return {
         buttons: newArray,

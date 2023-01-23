@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import TasksFilter from '../tasks-filter'
+import TasksFilter from '../TasksFilter'
 
 function Footer({ todo, onClearCompleted, onTasksFilter }) {
   return (

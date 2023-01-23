@@ -8,20 +8,22 @@ export default class NewTaskForm extends React.Component {
       label: '',
     }
 
-    this.onLabelChange = (e) => {
+    this.onLabelChange = (event) => {
       this.setState({
-        label: e.target.value,
+        label: event.target.value,
       })
     }
 
-    this.onSubmit = (e) => {
-      e.preventDefault()
+    this.onSubmit = (event) => {
+      event.preventDefault()
       const { onItemAdded } = this.props
       const { label } = this.state
-      onItemAdded(label, Date.now())
-      this.setState({
-        label: '',
-      })
+      if (label.search(/\S/) !== -1) {
+        onItemAdded(label, Date.now())
+        this.setState({
+          label: '',
+        })
+      }
     }
   }
 

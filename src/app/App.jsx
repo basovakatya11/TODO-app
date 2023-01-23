@@ -1,9 +1,9 @@
 import React from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
-import Footer from '../footer'
-import NewTaskForm from '../new-task-form'
-import TaskList from '../task-list'
+import Footer from '../Footer'
+import NewTaskForm from '../NewTaskForm'
+import TaskList from '../TaskList'
 
 export default class App extends React.Component {
   maxId = 11
@@ -33,7 +33,7 @@ export default class App extends React.Component {
 
   editItem = (id, label) => {
     this.setState(({ todoData }) => {
-      const idx = todoData.findIndex((el) => el.id === id)
+      const idx = todoData.findIndex((elem) => elem.id === id)
       const oldObj = todoData[idx]
       const newObj = oldObj.editing ? { ...oldObj, editing: false, label } : { ...oldObj, editing: true }
 
@@ -70,7 +70,7 @@ export default class App extends React.Component {
 
   deleteItem = (id) => {
     this.setState(({ todoData }) => {
-      const idx = todoData.findIndex((el) => el.id === id)
+      const idx = todoData.findIndex((elem) => elem.id === id)
       const newArray = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)]
       return {
         todoData: newArray,
@@ -79,7 +79,7 @@ export default class App extends React.Component {
   }
 
   toggleProperty(arr, id, propName) {
-    const idx = arr.findIndex((el) => el.id === id)
+    const idx = arr.findIndex((elem) => elem.id === id)
     const oldObj = arr[idx]
     const newObj = { ...oldObj, [propName]: !oldObj[propName] }
     return [...arr.slice(0, idx), newObj, ...arr.slice(idx + 1)]
@@ -114,9 +114,9 @@ export default class App extends React.Component {
 
   tick() {
     this.setState(({ todoData }) => {
-      const newArray = todoData.map((el) => {
-        const { addingTime } = el
-        const newEl = { ...el }
+      const newArray = todoData.map((elem) => {
+        const { addingTime } = elem
+        const newEl = { ...elem }
         newEl.timeToNow = formatDistanceToNow(new Date(addingTime), { includeSeconds: true, addSuffix: true })
         return newEl
       })

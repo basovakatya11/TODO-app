@@ -1,7 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 
-import Task from '../task'
+import Task from '../Task'
 
 export default function TaskList({ todos, onDeleted, onToggleDone, onIconEdit, onItemEdit }) {
   const elements = todos.map((item) => {
