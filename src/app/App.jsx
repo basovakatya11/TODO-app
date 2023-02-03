@@ -10,9 +10,9 @@ export default class App extends React.Component {
 
   state = {
     todoData: [
-      this.createTodoItem('Completed Task', '2023-01-11 10:35'),
-      this.createTodoItem('Editing Task', '2023-01-11 10:30', true),
-      this.createTodoItem('Active Task', '2023-01-11 10:40'),
+      this.createTodoItem('Task 1', '2023-01-11 10:35', 60),
+      this.createTodoItem('Task 2', '2023-01-11 10:30', 60),
+      this.createTodoItem('Task 3', '2023-01-11 10:40', 40),
     ],
     filter: 'all',
   }
@@ -51,8 +51,8 @@ export default class App extends React.Component {
     }))
   }
 
-  addItem = (text, addingTime) => {
-    const newItem = this.createTodoItem(text, addingTime)
+  addItem = (text, addingTime, timer) => {
+    const newItem = this.createTodoItem(text, addingTime, timer)
 
     this.setState(({ todoData }) => ({
       todoData: [...todoData, newItem],
@@ -101,7 +101,7 @@ export default class App extends React.Component {
     return match[filter] ? match[filter]() : items
   }
 
-  createTodoItem(label, addingTime, editing = false) {
+  createTodoItem(label, addingTime, timer, editing = false) {
     return {
       label,
       addingTime,
@@ -109,6 +109,7 @@ export default class App extends React.Component {
       id: this.maxId++,
       done: false,
       editing,
+      timer,
     }
   }
 

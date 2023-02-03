@@ -6,39 +6,81 @@ export default class NewTaskForm extends React.Component {
     super()
     this.state = {
       label: '',
+      minutes: '',
+      seconds: '',
     }
 
-    this.onLabelChange = (event) => {
+    this.onInputChange = (event) => {
+      const {
+        target: { name, value },
+      } = event
+
       this.setState({
-        label: event.target.value,
+        [name]: value,
       })
     }
 
     this.onSubmit = (event) => {
       event.preventDefault()
       const { onItemAdded } = this.props
-      const { label } = this.state
-      if (label.search(/\S/) !== -1) {
-        onItemAdded(label, Date.now())
+      const { label, minutes, seconds } = this.state
+      if (this.validateForm(label, minutes, seconds)) {
+        const time = this.formatTime()
+        onItemAdded(label, Date.now(), time)
         this.setState({
           label: '',
+          seconds: '',
+          minutes: '',
         })
       }
     }
   }
 
+  formatTime = () => {
+    const { minutes, seconds } = this.state
+    return Number(minutes) * 60 + Number(seconds)
+  }
+
+  validateForm = (label, minutes, seconds) => {
+    let result = true
+    if (label.search(/\S/) === -1) result = false
+    if (minutes.search(/\S/) === -1 && seconds.search(/\S/) === -1) result = false
+    if (typeof +minutes !== 'number' || typeof +seconds !== 'number') result = false
+    if (Number.isNaN(+minutes) || Number.isNaN(+seconds)) result = false
+    return result
+  }
+
   render() {
-    const { label } = this.state
+    const { label, minutes, seconds } = this.state
     return (
       <header className="header">
         <h1>todos</h1>
-        <form onSubmit={this.onSubmit}>
+        <form onSubmit={this.onSubmit} className="new-todo-form">
           <input
             className="new-todo"
-            placeholder="What needs to be done?"
-            onChange={this.onLabelChange}
+            placeholder="Task"
+            onChange={this.onInputChange}
             value={label}
+            autoFocus
+            name="label"
           />
+          <input
+            className="new-todo-form__timer"
+            placeholder="Min"
+            autoFocus
+            name="minutes"
+            onChange={this.onInputChange}
+            value={minutes}
+          />
+          <input
+            className="new-todo-form__timer"
+            placeholder="Sec"
+            autoFocus
+            name="seconds"
+            onChange={this.onInputChange}
+            value={seconds}
+          />
+          <input type="submit" style={{ display: 'none' }} />
         </form>
       </header>
     )
