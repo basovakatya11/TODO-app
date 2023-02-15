@@ -48,6 +48,8 @@
     "no-plusplus":"off",
     "class-methods-use-this": "off",
     "react/state-in-constructor": "off",
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn",
     "import/order": [
       2,
       {

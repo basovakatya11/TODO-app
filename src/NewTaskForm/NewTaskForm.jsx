@@ -1,92 +1,71 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
-export default class NewTaskForm extends React.Component {
-  constructor() {
-    super()
-    this.state = {
-      label: '',
-      minutes: '',
-      seconds: '',
-    }
+function NewTaskForm({ onItemAdded }) {
+  const [label, setLabel] = useState('')
+  const [minutes, setMinutes] = useState('')
+  const [seconds, setSeconds] = useState('')
 
-    this.onInputChange = (event) => {
-      const {
-        target: { name, value },
-      } = event
-
-      this.setState({
-        [name]: value,
-      })
-    }
-
-    this.onSubmit = (event) => {
-      event.preventDefault()
-      const { onItemAdded } = this.props
-      const { label, minutes, seconds } = this.state
-      if (this.validateForm(label, minutes, seconds)) {
-        const time = this.formatTime()
-        onItemAdded(label, Date.now(), time)
-        this.setState({
-          label: '',
-          seconds: '',
-          minutes: '',
-        })
-      }
-    }
+  const formatTime = (min, sec) => {
+    return Number(min) * 60 + Number(sec)
   }
 
-  formatTime = () => {
-    const { minutes, seconds } = this.state
-    return Number(minutes) * 60 + Number(seconds)
-  }
-
-  validateForm = (label, minutes, seconds) => {
+  const validateForm = (value, min, sec) => {
     let result = true
-    if (label.search(/\S/) === -1) result = false
-    if (minutes.search(/\S/) === -1 && seconds.search(/\S/) === -1) result = false
-    if (typeof +minutes !== 'number' || typeof +seconds !== 'number') result = false
-    if (Number.isNaN(+minutes) || Number.isNaN(+seconds)) result = false
+    if (value.search(/\S/) === -1) result = false
+    if (min.search(/\S/) === -1 && sec.search(/\S/) === -1) result = false
+    if (typeof +min !== 'number' || typeof +sec !== 'number') result = false
+    if (Number.isNaN(+min) || Number.isNaN(+sec)) result = false
     return result
   }
 
-  render() {
-    const { label, minutes, seconds } = this.state
-    return (
-      <header className="header">
-        <h1>todos</h1>
-        <form onSubmit={this.onSubmit} className="new-todo-form">
-          <input
-            className="new-todo"
-            placeholder="Task"
-            onChange={this.onInputChange}
-            value={label}
-            autoFocus
-            name="label"
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Min"
-            autoFocus
-            name="minutes"
-            onChange={this.onInputChange}
-            value={minutes}
-          />
-          <input
-            className="new-todo-form__timer"
-            placeholder="Sec"
-            autoFocus
-            name="seconds"
-            onChange={this.onInputChange}
-            value={seconds}
-          />
-          <input type="submit" style={{ display: 'none' }} />
-        </form>
-      </header>
-    )
+  const onSubmit = (event) => {
+    event.preventDefault()
+    if (validateForm(label, minutes, seconds)) {
+      const time = formatTime(minutes, seconds)
+      onItemAdded(label, Date.now(), time)
+      setLabel('')
+      setMinutes('')
+      setSeconds('')
+    }
   }
+
+  return (
+    <header className="header">
+      <h1>todos</h1>
+      <form onSubmit={onSubmit} className="new-todo-form">
+        <input
+          className="new-todo"
+          placeholder="Task"
+          onChange={(event) => setLabel(event.target.value)}
+          value={label}
+          autoFocus
+          name="label"
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Min"
+          autoFocus
+          name="minutes"
+          onChange={(event) => setMinutes(event.target.value)}
+          value={minutes}
+        />
+        <input
+          className="new-todo-form__timer"
+          placeholder="Sec"
+          autoFocus
+          name="seconds"
+          onChange={(event) => setSeconds(event.target.value)}
+          value={seconds}
+        />
+        <input type="submit" style={{ display: 'none' }} />
+      </form>
+    </header>
+  )
 }
 
 NewTaskForm.propTypes = {
   onItemAdded: PropTypes.func.isRequired,
 }
+
+export default NewTaskForm

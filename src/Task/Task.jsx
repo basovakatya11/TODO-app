@@ -1,132 +1,105 @@
-import React from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import PropTypes from 'prop-types'
 
-export default class Task extends React.Component {
-  state = {
-    keyword: this.props.label,
-    play: true,
-    timer: this.props.timer,
-  }
+function Task({ label, timer, onDeleted, timeToNow, onToggleDone, onIconEdit, done, editing, onItemEdit }) {
+  const [keyword, setKeyword] = useState(label)
+  const [play, setPlay] = useState(true)
+  const [time, setTime] = useState(timer)
 
-  componentDidMount() {
-    this.timeInterval = setInterval(this.updateTimer, 1000)
-  }
+  const refObject = useRef(null)
 
-  componentDidUpdate(prevProps, prevState) {
-    const { play } = this.state
-    if (play !== prevState.play) {
-      if (play) {
-        this.timeInterval = setInterval(this.updateTimer, 1000)
-      } else {
-        clearInterval(this.timeInterval)
-      }
-    }
-  }
-
-  componentWillUnmount() {
-    clearInterval(this.timeInterval)
-  }
-
-  inputChangedHandler = (event) => {
-    this.setState(() => ({
-      keyword: event.target.value,
-    }))
-  }
-
-  onSubmit = (event) => {
-    event.preventDefault()
-    const label = this.state.keyword
-    if (label.search(/\S/) !== -1) this.props.onItemEdit(this.state.keyword)
-  }
-
-  updateTimer = () => {
-    const { timer } = this.state
-    if (timer < 1) {
-      this.setState({
-        play: false,
-      })
-      return
-    }
-    this.setState(() => {
-      const newTime = timer - 1
-      return {
-        timer: newTime,
-      }
+  const updateTimer = () => {
+    setTime((t) => {
+      return t - 1
     })
   }
 
-  pauseTimer = () => {
-    const { play } = this.state
+  useEffect(() => {
     if (play) {
-      this.setState({
-        play: false,
-      })
+      refObject.current = setInterval(updateTimer, 1000)
     }
+    return () => {
+      if (refObject.current) {
+        clearInterval(refObject.current)
+        refObject.current = null
+      }
+    }
+  }, [play])
+
+  useEffect(() => {
+    if (time < 1) {
+      setPlay(false)
+    }
+  }, [time])
+
+  const inputChangedHandler = (event) => {
+    setKeyword(event.target.value)
   }
 
-  playTimer = () => {
-    const { play } = this.state
-    if (!play) {
-      this.setState({
-        play: true,
-      })
-    }
+  const onSubmit = (event) => {
+    event.preventDefault()
+    if (keyword.search(/\S/) !== -1) onItemEdit(keyword)
   }
 
-  formatTime(time) {
-    const minutes = Math.floor(time / 60)
-    let seconds = time % 60
+  const pauseTimer = () => {
+    if (!play) return
+    setPlay(false)
+  }
+
+  const playTimer = () => {
+    if (play) return
+    setPlay(true)
+  }
+
+  const formatTime = (t) => {
+    const minutes = Math.floor(t / 60)
+    let seconds = t % 60
     seconds = seconds < 10 ? `0${seconds}` : seconds
     return `${minutes}:${seconds}`
   }
 
-  render() {
-    const { label, onDeleted, timeToNow, onToggleDone, onIconEdit, done, editing } = this.props
-    const { keyword, timer } = this.state
+  let classNames = ''
 
-    let classNames = ''
-
-    if (done) {
-      classNames = 'completed'
-    }
-
-    const view = (
-      <div className="view">
-        <input className="toggle" type="checkbox" />
-        <label>
-          <span className="title" onClick={onToggleDone} onKeyDown={onToggleDone}>
-            {label}
-          </span>
-          <span className="description">
-            <button type="button" aria-label="play" className="icon icon-play" onClick={this.playTimer} />
-            <button type="button" aria-label="pause" className="icon icon-pause" onClick={this.pauseTimer} />
-            {this.formatTime(timer)}
-          </span>
-          <span className="description">{timeToNow}</span>
-        </label>
-        <button type="button" className="icon icon-edit" aria-label="Edit" onClick={onIconEdit} />
-        <button type="button" className="icon icon-destroy" aria-label="Destroy" onClick={onDeleted} />
-      </div>
-    )
-
-    if (editing) {
-      return (
-        <li className="editing">
-          {view}
-          <form onSubmit={this.onSubmit}>
-            <input
-              type="text"
-              className="edit"
-              value={keyword}
-              onChange={(event) => this.inputChangedHandler(event)}
-              autoFocus
-            />
-          </form>
-        </li>
-      )
-    }
-    return <li className={classNames}>{view}</li>
+  if (done) {
+    classNames = 'completed'
   }
+
+  const view = (
+    <div className="view">
+      <input className="toggle" type="checkbox" />
+      <label>
+        <span className="title" onClick={onToggleDone} onKeyDown={onToggleDone}>
+          {label}
+        </span>
+        <span className="description">
+          <button type="button" aria-label="play" className="icon icon-play" onClick={playTimer} />
+          <button type="button" aria-label="pause" className="icon icon-pause" onClick={pauseTimer} />
+          {formatTime(time)}
+        </span>
+        <span className="description">{timeToNow}</span>
+      </label>
+      <button type="button" className="icon icon-edit" aria-label="Edit" onClick={onIconEdit} />
+      <button type="button" className="icon icon-destroy" aria-label="Destroy" onClick={onDeleted} />
+    </div>
+  )
+
+  if (editing) {
+    return (
+      <li className="editing">
+        {view}
+        <form onSubmit={onSubmit}>
+          <input
+            type="text"
+            className="edit"
+            value={keyword}
+            onChange={(event) => inputChangedHandler(event)}
+            autoFocus
+          />
+        </form>
+      </li>
+    )
+  }
+  return <li className={classNames}>{view}</li>
 }
 
 Task.propTypes = {
@@ -139,3 +112,5 @@ Task.propTypes = {
   timeToNow: PropTypes.string.isRequired,
   timer: PropTypes.number.isRequired,
 }
+
+export default Task

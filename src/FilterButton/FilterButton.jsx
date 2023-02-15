@@ -1,31 +1,32 @@
-/* eslint-disable react/destructuring-assignment */
 import React from 'react'
 import PropTypes from 'prop-types'
 
-export default class Button extends React.Component {
-  onClick = (id, type) => {
-    this.props.onTasksFilter(type)
-    this.props.onToggleSelected(id)
+function Button({ onTasksFilter, onToggleSelected, id, type, selected }) {
+  const onClick = (ID, tasksType) => {
+    onTasksFilter(tasksType)
+    onToggleSelected(ID)
   }
 
-  render() {
-    const { id, type, selected } = this.props
-    let classNames = ''
-    const label = type[0].toUpperCase() + type.slice(1)
+  let classNames = ''
+  const label = type[0].toUpperCase() + type.slice(1)
 
-    if (selected) {
-      classNames = 'selected'
-    }
-
-    return (
-      <button type="button" className={classNames} onClick={() => this.onClick(id, type)}>
-        {label}
-      </button>
-    )
+  if (selected) {
+    classNames = 'selected'
   }
+
+  return (
+    <button type="button" className={classNames} onClick={() => onClick(id, type)}>
+      {label}
+    </button>
+  )
 }
 
 Button.propTypes = {
   type: PropTypes.string.isRequired,
   selected: PropTypes.bool.isRequired,
+  onTasksFilter: PropTypes.func.isRequired,
+  onToggleSelected: PropTypes.func.isRequired,
+  id: PropTypes.number.isRequired,
 }
+
+export default Button

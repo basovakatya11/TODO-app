@@ -1,49 +1,42 @@
-import React from 'react'
+import React, { useState } from 'react'
 import PropTypes from 'prop-types'
 
 import Button from '../FilterButton'
 
-export default class TasksFilter extends React.Component {
-  state = {
-    buttons: [
-      { type: 'all', selected: true, id: 1 },
-      { type: 'active', selected: false, id: 2 },
-      { type: 'completed', selected: false, id: 3 },
-    ],
-  }
+function TasksFilter({ onTasksFilter }) {
+  const [buttons, setButtons] = useState([
+    { type: 'all', selected: true, id: 1 },
+    { type: 'active', selected: false, id: 2 },
+    { type: 'completed', selected: false, id: 3 },
+  ])
 
-  onToggleSelected = (id) => {
-    this.setState(({ buttons }) => {
-      const newArray = buttons.map((item) => {
+  const onToggleSelected = (id) => {
+    setButtons((items) => {
+      const newArray = items.map((item) => {
         // eslint-disable-next-line no-param-reassign
         item.selected = false
         return item
       })
-      const idx = buttons.findIndex((elem) => elem.id === id)
+      const idx = items.findIndex((elem) => elem.id === id)
       newArray[idx].selected = true
-      return {
-        buttons: newArray,
-      }
+      return newArray
     })
   }
 
-  render() {
-    const { onTasksFilter } = this.props
-    const { buttons } = this.state
+  const elements = buttons.map((button) => {
+    const { id, ...itemProps } = button
+    return (
+      <li key={id}>
+        <Button {...itemProps} id={id} onTasksFilter={onTasksFilter} onToggleSelected={onToggleSelected} />
+      </li>
+    )
+  })
 
-    const elements = buttons.map((button) => {
-      const { id, ...itemProps } = button
-      return (
-        <li key={id}>
-          <Button {...itemProps} id={id} onTasksFilter={onTasksFilter} onToggleSelected={this.onToggleSelected} />
-        </li>
-      )
-    })
-
-    return <ul className="filters">{elements}</ul>
-  }
+  return <ul className="filters">{elements}</ul>
 }
 
 TasksFilter.propTypes = {
   onTasksFilter: PropTypes.func.isRequired,
 }
+
+export default TasksFilter
