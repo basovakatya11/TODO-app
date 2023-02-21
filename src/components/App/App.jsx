@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { formatDistanceToNow } from 'date-fns'
 
 import Footer from '../Footer'
@@ -6,21 +6,21 @@ import NewTaskForm from '../NewTaskForm'
 import TaskList from '../TaskList'
 
 function App() {
-  let maxId = 11
+  const maxId = useRef(11)
 
   const createTodoItem = (label, addingTime, timer, editing = false) => {
     return {
       label,
       addingTime,
       timeToNow: formatDistanceToNow(new Date(addingTime), { includeSeconds: true, addSuffix: true }),
-      id: maxId++,
+      id: maxId.current++,
       done: false,
       editing,
       timer,
     }
   }
 
-  const [todoData, setTodoData] = useState([
+  const [todoData, setTodoData] = useState(() => [
     createTodoItem('Task 1', '2023-01-11 10:35', 60),
     createTodoItem('Task 2', '2023-01-11 10:30', 60),
     createTodoItem('Task 3', '2023-01-11 10:40', 40),
@@ -74,7 +74,6 @@ function App() {
 
   const addItem = (text, addingTime, timer) => {
     const newItem = createTodoItem(text, addingTime, timer)
-
     setTodoData((data) => [...data, newItem])
   }
 

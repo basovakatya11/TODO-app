@@ -19,6 +19,12 @@ function NewTaskForm({ onItemAdded }) {
     return result
   }
 
+  const validateNumberValue = (value) => {
+    let result = true
+    if (Number.isNaN(+value)) result = false
+    return result
+  }
+
   const onSubmit = (event) => {
     event.preventDefault()
     if (validateForm(label, minutes, seconds)) {
@@ -47,7 +53,9 @@ function NewTaskForm({ onItemAdded }) {
           placeholder="Min"
           autoFocus
           name="minutes"
-          onChange={(event) => setMinutes(event.target.value)}
+          onChange={(event) => {
+            if (validateNumberValue(event.target.value)) setMinutes(event.target.value)
+          }}
           value={minutes}
         />
         <input
@@ -55,7 +63,9 @@ function NewTaskForm({ onItemAdded }) {
           placeholder="Sec"
           autoFocus
           name="seconds"
-          onChange={(event) => setSeconds(event.target.value)}
+          onChange={(event) => {
+            if (validateNumberValue(event.target.value)) setSeconds(event.target.value)
+          }}
           value={seconds}
         />
         <input type="submit" style={{ display: 'none' }} />
